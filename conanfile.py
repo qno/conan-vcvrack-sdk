@@ -20,6 +20,10 @@ class VCVRackSDKInstallerConan(ConanFile):
             self.output.error("Rack SDK on Windows is only compatible with MinGW GCC toolchain!")
             raise ConanInvalidConfiguration("VCV Rack SDK is not compatible with Visual Studio!")
 
+        if self.settings.arch != "x86_64":
+            raise ConanInvalidConfiguration("VCV Rack SDK currently only supports x86_64 platform!")
+
+
     def build(self):
         url = "https://vcvrack.com/downloads/Rack-SDK-{}.zip".format(self.version)
         self.output.info("Downloading {}".format(url))
