@@ -23,6 +23,5 @@ class VCVRackSDKInstallerTestConan(ConanFile):
         cmake.build(build_dir="cmake-build")
 
     def _buildWithMake(self):
-        self.output.info("Todo ... build Rack SDK test with make...?")
         autotools = AutoToolsBuildEnvironment(self)
         autotools.make(target="-f ../../Makefile")
