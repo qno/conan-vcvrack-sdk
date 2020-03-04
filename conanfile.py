@@ -1,4 +1,5 @@
 from conans import ConanFile, CMake, tools
+from conans.tools import os_info, SystemPackageTool
 from conans.errors import ConanInvalidConfiguration
 import os
 
@@ -23,11 +24,26 @@ class VCVRackSDKInstallerConan(ConanFile):
         if self.settings.arch != "x86_64":
             raise ConanInvalidConfiguration("VCV Rack SDK currently only supports x86_64 platform!")
 
+    def system_requirements(self):
+        packages = ["jq"]
+        update_installer = True
+        if self.settings.os == "Windows":
+            self.output.warn("manipulate script internal environment - add MSYS_BIN to PATH for using pacman tool")
+            del os.environ["CONAN_SYSREQUIRES_SUDO"]
+            os.environ["PATH"] += os.pathsep + os.pathsep.join(self.env["PATH"])
+            packages = ["mingw-w64-x86_64-jq", "mingw-w64-x86_64-libwinpthread"]
+            update_installer = False
+
+        installer = SystemPackageTool()
+
+        for package in packages:
+            installer.install(package, update=update_installer)
 
     def build(self):
         url = "https://vcvrack.com/downloads/Rack-SDK-{}.zip".format(self.version)
         self.output.info("Downloading {}".format(url))
         tools.get(url)
+        self.system_requirements()
 
     def package(self):
         self.copy("*.*", dst="include", src="{}/include".format(self._SDK_DIR))
