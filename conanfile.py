@@ -32,6 +32,7 @@ class VCVRackSDKInstallerConan(ConanFile):
     def package(self):
         self.copy("*.*", dst="include", src="{}/include".format(self._SDK_DIR))
         self.copy("*.*", dst="dep", src="{}/dep".format(self._SDK_DIR))
+        self.copy("*.mk", dst=".", src="{}".format(self._SDK_DIR))
 
         if self.settings.os == "Windows":
             self.copy("*Rack*.a", dst="lib", keep_path=False)

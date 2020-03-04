@@ -1,11 +1,13 @@
 import os
 
-from conans import ConanFile, CMake, tools
+from conans import ConanFile, CMake, AutoToolsBuildEnvironment, tools
 
 
 class VCVRackSDKInstallerTestConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
-    generators = "cmake"
+    generators = "cmake", "make"
+
+    exports_sources = "*"
 
     def build(self):
         self.output.info("generate stuff with helper first?")
@@ -22,3 +24,5 @@ class VCVRackSDKInstallerTestConan(ConanFile):
 
     def _buildWithMake(self):
         self.output.info("Todo ... build Rack SDK test with make...?")
+        autotools = AutoToolsBuildEnvironment(self)
+        autotools.make(target="-f ../../Makefile")
