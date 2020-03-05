@@ -12,8 +12,6 @@ class VCVRackSDKTestConan(ConanFile):
         self.copy("helper.py", src="script")
 
     def build(self):
-        if self.settings.os == "Windows":
-            os.environ["PATH"] += os.pathsep + self.env["MSYS_ROOT"] + os.sep + "mingw64" + os.sep + "bin"
         self._buildWithCMake()
         self._buildWithMake()
 
