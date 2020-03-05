@@ -8,15 +8,18 @@ class VCVRackSDKInstallerTestConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     generators = "cmake", "make"
 
+    def imports(self):
+        self.copy("helper.py", src="script")
+
     def build(self):
         if self.settings.os == "Windows":
             os.environ["PATH"] += os.pathsep + self.env["MSYS_ROOT"] + os.sep + "mingw64" + os.sep + "bin"
-        self.output.info("generate plugin src just with helper?")
         self._buildWithCMake()
         self._buildWithMake()
 
     def test(self):
-        self.output.info("nothing to run here")
+        self.output.info("check for helper.py availability")
+        self.run("python helper.py")
 
     def _buildWithCMake(self):
         self.output.info("building test plugin with CMake ...")
