@@ -3,12 +3,12 @@ from conans.tools import os_info, SystemPackageTool
 from conans.errors import ConanInvalidConfiguration
 import os
 
-class VCVRackSDKInstallerConan(ConanFile):
-    name = "vcvrack-sdk-installer"
+class VCVRackSDKConan(ConanFile):
+    name = "vcvrack-sdk"
     version = "1.1.6"
     license = "GPL-3.0"
     author = "Andrew Belt"
-    url = "https://github.com/qno/conan-vcvrack-sdk-installer"
+    url = "https://github.com/qno/conan-vcvrack-sdk"
     homepage = "https://vcvrack.com"
     description = "VCV Rack SDK for Rack plugin development."
 
@@ -43,7 +43,6 @@ class VCVRackSDKInstallerConan(ConanFile):
         url = "https://vcvrack.com/downloads/Rack-SDK-{}.zip".format(self.version)
         self.output.info("Downloading {}".format(url))
         tools.get(url)
-        self.system_requirements()
 
     def package(self):
         self.copy("*.*", dst="include", src="{}/include".format(self._SDK_DIR))

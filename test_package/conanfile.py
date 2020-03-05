@@ -4,7 +4,7 @@ from conans import ConanFile, CMake, AutoToolsBuildEnvironment, tools
 from conans.tools import os_info, SystemPackageTool
 
 
-class VCVRackSDKInstallerTestConan(ConanFile):
+class VCVRackSDKTestConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     generators = "cmake", "make"
 
