@@ -30,7 +30,7 @@ class VCVRackSDKInstallerConan(ConanFile):
         if self.settings.os == "Windows":
             self.output.warn("manipulate script internal environment - add MSYS_BIN to PATH for using pacman tool")
             del os.environ["CONAN_SYSREQUIRES_SUDO"]
-            os.environ["PATH"] += os.pathsep + os.pathsep.join(self.env["PATH"])
+            os.environ["PATH"] += os.pathsep + self.env["MSYS_BIN"]
             packages = ["mingw-w64-x86_64-jq", "mingw-w64-x86_64-libwinpthread"]
             update_installer = False
 

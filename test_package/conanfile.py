@@ -8,13 +8,9 @@ class VCVRackSDKInstallerTestConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     generators = "cmake", "make"
 
-    exports_sources = "*"
-
-    def system_requirements(self):
-        if self.settings.os == "Windows":
-            os.environ["PATH"] += os.pathsep + os.pathsep.join(self.env["PATH"]) + os.pathsep + "c:\\.conan\\80265f\\1\\bin\\mingw64\\bin"
-
     def build(self):
+        if self.settings.os == "Windows":
+            os.environ["PATH"] += os.pathsep + self.env["MSYS_ROOT"] + os.sep + "mingw64" + os.sep + "bin"
         self.output.info("generate plugin src just with helper?")
         self._buildWithCMake()
         self._buildWithMake()
