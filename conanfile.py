@@ -54,7 +54,6 @@ class VCVRackSDKConan(ConanFile):
             self.copy("*Rack*.a", dst="lib", keep_path=False)
 
     def package_info(self):
-
         if self.settings.os == "Windows":
             self.cpp_info.cppflags.append("-DARCH_WIN")
             self.cpp_info.libs.append("Rack")
@@ -67,7 +66,6 @@ class VCVRackSDKConan(ConanFile):
             self.cpp_info.cppflags.append("-DARCH_MAC")
 
         self.cpp_info.includedirs = ["include", "dep/include"]
-
         self.env_info.path.append(os.path.join(self.package_folder, "script"))
 
     def package_id(self):
