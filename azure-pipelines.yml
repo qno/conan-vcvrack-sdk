@@ -3,7 +3,7 @@ trigger:
 - master
 
 variables:
-  azure_ci_run: "true"
+  is_running_in_azure_ci: "true"
   python-version: "3.7"
   conan-pkg: "conan"
   cpt-pkg:  "conan_package_tools"
