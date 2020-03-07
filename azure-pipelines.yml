@@ -44,15 +44,14 @@ jobs:
       vmImage: ubuntu-latest
     container:
       image: archlinux
-      #options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
+      options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
     steps:
-      #- script: |
-      #    /tmp/docker exec -t -u 0 ci-container \
-      #    sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
-      #  displayName: add sudo to container #https://github.com/Microsoft/azure-pipelines-agent/issues/2043
+      - script: |
+          /tmp/docker exec -t -u 0 ci-container sh -c "pacman -S --noconfirm sudo"
+        displayName: add sudo to container #https://github.com/Microsoft/azure-pipelines-agent/issues/2043
       - script: |
           export PATH="$PATH:$HOME/.local/bin"
-          su pacman -S --noconfirm python python-pip
+          sudo pacman -S --noconfirm python python-pip
           python --version
           pip install --user --upgrade pip
           pip install --user $(conan-pkg)
