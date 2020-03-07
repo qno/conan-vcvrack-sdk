@@ -49,7 +49,7 @@ jobs:
           conan user
           conan create .
         displayName: conan create package
-  - job: macOS1014
+  - job: MacOS
     pool:
       vmImage: macOS-latest
     strategy:
