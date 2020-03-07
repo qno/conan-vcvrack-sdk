@@ -71,9 +71,9 @@ jobs:
       - script: |
           export PATH="$PATH:$HOME/.local/bin"
           sudo yum install -y python3 gcc gcc-c++
-          python --version
-          pip install --user --upgrade pip
-          pip install --user $(conan-pkg)
+          python3 --version
+          pip3 install --user --upgrade pip
+          pip3 install --user $(conan-pkg)
           conan user
           conan create . -s compiler.libcxx=libstdc++11
         displayName: conan create package
