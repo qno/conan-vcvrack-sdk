@@ -43,6 +43,15 @@ class VCVRackSDKConan(ConanFile):
         if self.settings.os == "Macos":
             packages += ["autoconf", "automake", "libtool"]
 
+        if self.settings.os == "Linux":
+            mesaPackage = { "ubuntu": "libglu1-mesa-dev",
+                            "debian": "libglu1-mesa-dev",
+                            "fedora": "mesa-libGLU-devel",
+                            "centos": "mesa-libGLU-devel",
+                            "arch": "mesa"
+                          }
+            packages += [mesaPackage[os_info.linux_distro]]
+
         installer = SystemPackageTool()
         for package in packages:
             installer.install(package, update=update_installer)

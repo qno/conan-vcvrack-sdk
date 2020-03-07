@@ -33,7 +33,7 @@ jobs:
          versionSpec: $(python-version)
       - script: |
           export PATH="$PATH:/home/vsts/.local/bin"
-          sudo apt install -y python3-setuptools libglu1-mesa-dev
+          sudo apt install -y python3-setuptools
           pip install --user --upgrade pip
           pip install --user $(conan-pkg)
           conan user
