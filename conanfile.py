@@ -13,7 +13,7 @@ class VCVRackSDKConan(ConanFile):
     homepage = "https://vcvrack.com"
     description = "VCV Rack SDK for Rack plugin development."
 
-    settings = "os", "compiler", "build_type", "arch"
+    settings = "os", "compiler", "arch"
 
     _SDK_DIR = "Rack-SDK"
 
@@ -36,11 +36,14 @@ class VCVRackSDKConan(ConanFile):
             self.output.warn("manipulate script internal environment - add MSYS_BIN to PATH for using pacman tool")
             del os.environ["CONAN_SYSREQUIRES_SUDO"]
             os.environ["PATH"] += os.pathsep + self.env["MSYS_BIN"]
-            # adding --disable-download-timeout to a package will prepend this as option to the pacman command to avoid
-            # failing package installation caused by download timeout
-            # this hack is needed in CI environment
-            packages = ["--disable-download-timeout mingw-w64-x86_64-jq", "--disable-download-timeout mingw-w64-x86_64-libwinpthread"]
+            packages = ["mingw-w64-x86_64-jq", "mingw-w64-x86_64-libwinpthread"]
             update_installer = False
+            if os.environ["AZURE_CI_RUN"]:
+                # adding --disable-download-timeout to a package will prepend this as option to the pacman command to avoid
+                # failing package installation caused by download timeout
+                # this hack is needed in CI environment
+                packages = ["--disable-download-timeout mingw-w64-x86_64-jq", "--disable-download-timeout mingw-w64-x86_64-libwinpthread"]
+                update_installer = True
 
         installer = SystemPackageTool()
 
@@ -78,9 +81,7 @@ class VCVRackSDKConan(ConanFile):
         self.env_info.path.append(os.path.join(self.package_folder, "script"))
 
     def package_id(self):
-       del self.info.settings.compiler
-       del self.info.settings.os
-       del self.info.settings.build_type
+       self.info.header_only()
 
     @property
     def _isMinGWBuild(self):
