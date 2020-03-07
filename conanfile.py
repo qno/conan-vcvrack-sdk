@@ -1,7 +1,8 @@
+import os
 from conans import ConanFile, CMake, tools
 from conans.tools import os_info, SystemPackageTool
 from conans.errors import ConanInvalidConfiguration
-import os
+
 
 class VCVRackSDKConan(ConanFile):
     name = "vcvrack-sdk"
@@ -23,6 +24,9 @@ class VCVRackSDKConan(ConanFile):
 
         if self.settings.arch != "x86_64":
             raise ConanInvalidConfiguration("VCV Rack SDK currently only supports x86_64 platform!")
+
+    def requirements(self):
+        self.requires.add("msys2/20190524")
 
     def system_requirements(self):
         packages = ["jq"]
@@ -57,7 +61,7 @@ class VCVRackSDKConan(ConanFile):
         if self.settings.os == "Windows":
             self.cpp_info.cppflags.append("-DARCH_WIN")
             self.cpp_info.libs.append("Rack")
-            self.env_info.path.append(os.path.join(self.env["MSYS_ROOT"], "mingw64", "bin"))
+            self.env_info.path.append(os.path.join(self.deps_env_info["msys2"].MSYS_ROOT, "mingw64", "bin"))
 
         if self.settings.os == "Linux":
             self.cpp_info.cppflags.append("-DARCH_LIN")
