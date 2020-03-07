@@ -13,7 +13,7 @@ class VCVRackSDKConan(ConanFile):
     homepage = "https://vcvrack.com"
     description = "VCV Rack SDK for Rack plugin development."
 
-    settings = "os", "compiler", "build_type", "arch"
+    settings = "os", "compiler", "arch"
 
     _SDK_DIR = "Rack-SDK"
 
@@ -30,17 +30,29 @@ class VCVRackSDKConan(ConanFile):
             self.requires.add("msys2/20190524")
 
     def system_requirements(self):
-        packages = ["jq"]
+        packages = ["git", "zip", "make", "cmake", "jq"]
         update_installer = True
+
         if self.settings.os == "Windows":
             self.output.warn("manipulate script internal environment - add MSYS_BIN to PATH for using pacman tool")
             del os.environ["CONAN_SYSREQUIRES_SUDO"]
             os.environ["PATH"] += os.pathsep + self.env["MSYS_BIN"]
-            packages = ["mingw-w64-x86_64-jq", "mingw-w64-x86_64-libwinpthread"]
+            packages = ["zip", "mingw-w64-x86_64-jq", "mingw-w64-x86_64-libwinpthread"]
             update_installer = False
 
-        installer = SystemPackageTool()
+        if self.settings.os == "Macos":
+            packages += ["autoconf", "automake", "libtool"]
 
+        if self.settings.os == "Linux":
+            mesaPackage = { "ubuntu": "libglu1-mesa-dev",
+                            "debian": "libglu1-mesa-dev",
+                            "fedora": "mesa-libGLU-devel",
+                            "centos": "mesa-libGLU-devel",
+                            "arch": "mesa"
+                          }
+            packages += [mesaPackage[os_info.linux_distro]]
+
+        installer = SystemPackageTool()
         for package in packages:
             installer.install(package, update=update_installer)
 
@@ -75,9 +87,7 @@ class VCVRackSDKConan(ConanFile):
         self.env_info.path.append(os.path.join(self.package_folder, "script"))
 
     def package_id(self):
-       del self.info.settings.compiler
-       del self.info.settings.os
-       del self.info.settings.build_type
+       self.info.header_only()
 
     @property
     def _isMinGWBuild(self):

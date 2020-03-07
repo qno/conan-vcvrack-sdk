@@ -1,0 +1,105 @@
+# https://docs.microsoft.com/de-de/azure/devops/pipelines/agents/hosted?view=azure-devops#software
+trigger:
+- master
+
+variables:
+  python-version: "3.7"
+  conan-pkg: "conan"
+  create-mingw-profile: |
+    (
+      echo [settings]
+      echo os=Windows
+      echo os_build=Windows
+      echo arch=x86_64
+      echo arch_build=x86_64
+      echo compiler=gcc
+      echo compiler.version=8
+      echo compiler.exception=seh
+      echo compiler.libcxx=libstdc++11
+      echo compiler.threads=posix
+      echo build_type=Release
+      echo [build_requires]
+      echo mingw_installer/1.0@conan/stable
+      echo msys2/20190524
+    ) > mingw
+
+jobs:
+  - job: UbuntuLinux
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      - task: UsePythonVersion@0
+        inputs:
+         versionSpec: $(python-version)
+      - script: |
+          export PATH="$PATH:/home/vsts/.local/bin"
+          sudo apt install -y python3-setuptools
+          pip install --user --upgrade pip
+          pip install --user $(conan-pkg)
+          conan user
+          conan create . -s compiler.libcxx=libstdc++11
+        displayName: conan create package
+  - job: ArchLinux
+    pool:
+      vmImage: ubuntu-latest
+    container:
+      image: archlinux
+      options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
+    steps:
+      - script: |
+          /tmp/docker exec -t -u 0 ci-container sh -c "pacman -Sy --noconfirm sudo"
+        displayName: add sudo to container #https://github.com/Microsoft/azure-pipelines-agent/issues/2043
+      - script: |
+          export PATH="$PATH:$HOME/.local/bin"
+          sudo pacman -Sy --noconfirm python python-pip gcc
+          pip install --user --upgrade pip
+          pip install --user $(conan-pkg)
+          conan user
+          conan create . -s compiler.libcxx=libstdc++11
+        displayName: conan create package
+  - job: CentOSLinux
+    pool:
+      vmImage: ubuntu-latest
+    container:
+      image: centos
+      options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
+    steps:
+      - script: |
+          /tmp/docker exec -t -u 0 ci-container sh -c "yum install -y sudo"
+        displayName: add sudo to container #https://github.com/Microsoft/azure-pipelines-agent/issues/2043
+      - script: |
+          export PATH="$PATH:$HOME/.local/bin"
+          sudo yum install -y python3 gcc gcc-c++
+          pip3 install --user --upgrade pip
+          pip3 install --user $(conan-pkg)
+          conan user
+          conan create . -s compiler.libcxx=libstdc++11
+        displayName: conan create package
+  - job: MacOS
+    pool:
+      vmImage: macOS-latest
+    steps:
+      - task: UsePythonVersion@0
+        inputs:
+         versionSpec: $(python-version)
+      - script: |
+          export PATH=$PATH:$HOME/.local/bin
+          pip install --upgrade pip
+          pip install --upgrade $(conan-pkg)
+          conan user
+          conan create .
+        displayName: conan create package
+  - job: MinGW
+    pool:
+      vmImage: windows-latest
+    steps:
+      - task: UsePythonVersion@0
+        inputs:
+         versionSpec: $(python-version)
+      - script: |
+          $(create-mingw-profile)
+          python -m pip install --upgrade pip
+          python -m pip install $(conan-pkg)
+          conan user
+          conan create . -p ./mingw
+        displayName: conan create package
