@@ -70,7 +70,7 @@ jobs:
         displayName: add sudo to container #https://github.com/Microsoft/azure-pipelines-agent/issues/2043
       - script: |
           export PATH="$PATH:$HOME/.local/bin"
-          sudo yum install -y python python-pip gcc gcc-c++
+          sudo yum install -y python3 gcc gcc-c++
           python --version
           pip install --user --upgrade pip
           pip install --user $(conan-pkg)
