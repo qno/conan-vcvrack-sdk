@@ -26,7 +26,7 @@ variables:
 jobs:
   - job: Linux
     pool:
-      vmImage: Ubuntu-16.04
+      vmImage: ubuntu-latest
     strategy:
       matrix:
         Gcc 8 x86_64:
@@ -51,7 +51,7 @@ jobs:
         displayName: conan create package
   - job: macOS1014
     pool:
-      vmImage: macOS-10.14
+      vmImage: macOS-latest
     strategy:
       matrix:
         # Xcode Version overview: https://gist.github.com/yamaya/2924292
@@ -73,7 +73,7 @@ jobs:
         displayName: conan create package
   - job: MinGW
     pool:
-      vmImage: vs2017-win2016
+      vmImage: windows-latest
     strategy:
       matrix:
         GCC 8:
