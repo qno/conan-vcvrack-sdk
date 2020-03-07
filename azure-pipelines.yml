@@ -52,7 +52,6 @@ jobs:
       - script: |
           export PATH="$PATH:$HOME/.local/bin"
           sudo pacman -Sy --noconfirm python python-pip gcc make
-          python --version
           pip install --user --upgrade pip
           pip install --user $(conan-pkg)
           conan user
@@ -71,7 +70,6 @@ jobs:
       - script: |
           export PATH="$PATH:$HOME/.local/bin"
           sudo yum install -y python3 gcc gcc-c++
-          python3 --version
           pip3 install --user --upgrade pip
           pip3 install --user $(conan-pkg)
           conan user
