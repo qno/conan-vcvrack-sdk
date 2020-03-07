@@ -37,7 +37,7 @@ class VCVRackSDKConan(ConanFile):
             self.output.warn("manipulate script internal environment - add MSYS_BIN to PATH for using pacman tool")
             del os.environ["CONAN_SYSREQUIRES_SUDO"]
             os.environ["PATH"] += os.pathsep + self.env["MSYS_BIN"]
-            packages = ["unzip", "zip", "mingw-w64-x86_64-jq", "mingw-w64-x86_64-libwinpthread", "mingw-w64-x86_64-cmake"]
+            packages = ["unzip", "zip", "mingw-w64-x86_64-jq", "mingw-w64-x86_64-libwinpthread"]
             update_installer = False
 
         if self.settings.os == "Macos":
