@@ -23,7 +23,7 @@ variables:
       echo build_type=Release
       echo [build_requires]
       echo mingw_installer/1.0@conan/stable
-      echo msys2_installer/latest@bincrafters/stable
+      echo msys2/20190524
     ) > mingw
 
 jobs:

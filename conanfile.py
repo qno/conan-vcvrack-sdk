@@ -40,12 +40,12 @@ class VCVRackSDKConan(ConanFile):
             self.run("pacman -S -h")
             packages = ["mingw-w64-x86_64-jq", "mingw-w64-x86_64-libwinpthread"]
             update_installer = False
-            if os.environ["IS_RUNNING_IN_AZURE_CI"]:
+            #if os.environ["IS_RUNNING_IN_AZURE_CI"]:
                 # adding --disable-download-timeout to a package will prepend this as option to the pacman command to avoid
                 # failing package installation caused by download timeout
                 # this hack is needed in CI environment
-                self.run("pacman -Syyu --noconfirm")
-                packages = ["--disable-download-timeout mingw-w64-x86_64-jq", "--disable-download-timeout mingw-w64-x86_64-libwinpthread"]
+            #    self.run("pacman -Syyu --noconfirm")
+            #    packages = ["--disable-download-timeout mingw-w64-x86_64-jq", "--disable-download-timeout mingw-w64-x86_64-libwinpthread"]
 
         installer = SystemPackageTool()
 
