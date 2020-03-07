@@ -51,7 +51,7 @@ jobs:
         displayName: add sudo to container #https://github.com/Microsoft/azure-pipelines-agent/issues/2043
       - script: |
           export PATH="$PATH:$HOME/.local/bin"
-          sudo pacman -Sy --noconfirm python python-pip gcc make
+          sudo pacman -Sy --noconfirm python python-pip gcc
           pip install --user --upgrade pip
           pip install --user $(conan-pkg)
           conan user
