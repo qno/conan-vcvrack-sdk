@@ -30,14 +30,19 @@ class VCVRackSDKConan(ConanFile):
             self.requires.add("msys2/20190524")
 
     def system_requirements(self):
-        packages = ["jq"]
+        packages = ["git", "curl", "wget", "unzip", "zip", "cmake", "jq"]
         update_installer = True
+
         if self.settings.os == "Windows":
             self.output.warn("manipulate script internal environment - add MSYS_BIN to PATH for using pacman tool")
             del os.environ["CONAN_SYSREQUIRES_SUDO"]
             os.environ["PATH"] += os.pathsep + self.env["MSYS_BIN"]
-            packages = ["mingw-w64-x86_64-jq", "mingw-w64-x86_64-libwinpthread"]
+            packages = ["git", "wget", "make", "tar", "unzip", "zip",
+                        "mingw-w64-x86_64-jq", "mingw-w64-x86_64-libwinpthread", "mingw-w64-x86_64-cmake"]
             update_installer = False
+
+        if self.settings.os == "Macos"
+            packages += ["autoconf", "automake", "libtool"]
 
         installer = SystemPackageTool()
         for package in packages:
