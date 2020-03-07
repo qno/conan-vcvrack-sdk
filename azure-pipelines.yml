@@ -27,44 +27,26 @@ jobs:
   - job: Linux
     pool:
       vmImage: ubuntu-latest
-    strategy:
-      matrix:
-        Gcc 8 x86_64:
-          CONAN_GCC_VERSIONS: 8
-          CONAN_DOCKER_IMAGE: conanio/gcc8
-          CONAN_ARCHS: "x86_64"
-        Clang 7.0 x86_64:
-          CONAN_CLANG_VERSIONS: 7.0
-          CONAN_DOCKER_IMAGE: conanio/clang7
-          CONAN_ARCHS: "x86_64"
     steps:
       - task: UsePythonVersion@0
         inputs:
          versionSpec: $(python-version)
       - script: |
           export PATH="$PATH:/home/vsts/.local/bin"
-          sudo apt install -y python3-setuptools
+          sudo apt install -y python3-setuptools libglu1-mesa-dev
           pip install --user --upgrade pip
           pip install --user $(conan-pkg)
           conan user
-          conan create .
+          conan create . -s compiler.libcxx=libstdc++11
         displayName: conan create package
   - job: MacOS
     pool:
       vmImage: macOS-latest
-    strategy:
-      matrix:
-        # Xcode Version overview: https://gist.github.com/yamaya/2924292
-        # available versions: https://github.com/Microsoft/azure-pipelines-image-generation/blob/master/images/macos/macos-10.14-Readme.md
-        Apple Clang 10.0.1:
-          CONAN_APPLE_CLANG_VERSIONS: 10.0
-          XCODE_VERSION: 10.2
     steps:
       - task: UsePythonVersion@0
         inputs:
          versionSpec: $(python-version)
       - script: |
-          /bin/bash -c "sudo xcode-select -s /Applications/Xcode_$(XCODE_VERSION).app/Contents/Developer"
           export PATH=$PATH:$HOME/.local/bin
           pip install --upgrade pip
           pip install --upgrade $(conan-pkg)
@@ -74,11 +56,6 @@ jobs:
   - job: MinGW
     pool:
       vmImage: windows-latest
-    strategy:
-      matrix:
-        GCC 8:
-          MINGW_CONFIGURATIONS: '8@x86_64@seh@posix'
-          CONAN_BUILD_TYPES: Release
     steps:
       - task: UsePythonVersion@0
         inputs:
