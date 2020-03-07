@@ -41,7 +41,7 @@ class VCVRackSDKConan(ConanFile):
                         "mingw-w64-x86_64-jq", "mingw-w64-x86_64-libwinpthread", "mingw-w64-x86_64-cmake"]
             update_installer = False
 
-        if self.settings.os == "Macos"
+        if self.settings.os == "Macos":
             packages += ["autoconf", "automake", "libtool"]
 
         installer = SystemPackageTool()
