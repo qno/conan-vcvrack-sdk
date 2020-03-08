@@ -70,7 +70,7 @@ stages:
     strategy:
       matrix:
         Arch:
-          docker-image: arch
+          dockerImage: arch
           install-sudo: pacman -Sy --noconfirm sudo
           prepare-env: sudo pacman -Sy --noconfirm python python-pip gcc
           pip-command: pip
@@ -90,7 +90,7 @@ stages:
           prepare-env: sudo dnf install -y python
           pip-command: pip3
     container:
-      image: $(docker-image)
+      image: $(dockerImage)
       options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
     steps:
       - script: |
