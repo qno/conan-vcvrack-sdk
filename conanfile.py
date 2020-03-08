@@ -69,13 +69,14 @@ class VCVRackSDKConan(ConanFile):
         self.copy("helper.py", dst="script", src="{}".format(self._SDK_DIR))
 
         if self.settings.os == "Windows":
-            self.copy("*Rack*.a", dst="lib", keep_path=False)
+            self.copy("*Rack*.a", dst=".", keep_path=False)
 
     def package_info(self):
         if self.settings.os == "Windows":
             self.cpp_info.cxxflags.append("-DARCH_WIN")
             self.cpp_info.libs.append("Rack")
             self.env_info.path.append(os.path.join(self.deps_env_info["msys2"].MSYS_ROOT, "mingw64", "bin"))
+            self.cpp_info.libdirs.append(os.path.join(self.package_folder))
 
         if self.settings.os == "Linux":
             self.cpp_info.cxxflags.append("-DARCH_LIN")
@@ -90,6 +91,7 @@ class VCVRackSDKConan(ConanFile):
 
         self.cpp_info.includedirs = ["include", "dep/include"]
         self.env_info.path.append(os.path.join(self.package_folder, "script"))
+        self.env_info.RACK_DIR = os.path.join(self.package_folder)
 
     def package_id(self):
        self.info.header_only()
