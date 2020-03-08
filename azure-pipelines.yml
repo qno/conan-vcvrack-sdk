@@ -59,10 +59,8 @@ stages:
          $(prepare-env)
          $(pip-command) install --user --upgrade pip
          $(pip-command) install --user conan
-        displayName: prepare system
-      - script: |
-          conan user
-          conan create . -s compiler.libcxx=libstdc++11 $(conan-profile)
+         conan user
+         conan create . -s compiler.libcxx=libstdc++11 $(conan-profile)
         displayName: create conan package
 
   - job: CreatePackageOtherLinux
