@@ -25,34 +25,29 @@ variables:
 stages:
 - stage: create
   displayName: create conan package
-jobs:
-
-- stage: publish
-  displayName: publish conan package
-  dependsOn: create
   jobs:
   - job: CreatePackage
     strategy:
-    matrix:
-      linuxubuntu:
-        imageName: ubuntu-latest
-        prepare-env: |
-          export PATH="$PATH:/home/vsts/.local/bin"
-          sudo apt install -y python3-setuptools
-        pip-command: pip3
-        conan-profile: ""
-#      linuxdocker:
-#        imageName: ubuntu-latest
-      macos:
-        imageName: macOS-latest
-        prepare-env: export PATH=$PATH:$HOME/.local/bin
-        pip-command: pip
-        conan-profile: ""
-      windows:
-        imageName: windows-latest
-        prepare-env: $(create-mingw-profile)
-        pip-command: python -m pip
-        conan-profile: "-p mingw"
+      matrix:
+        linuxubuntu:
+          imageName: ubuntu-latest
+          prepare-env: |
+            export PATH="$PATH:/home/vsts/.local/bin"
+            sudo apt install -y python3-setuptools
+          pip-command: pip3
+          conan-profile: ""
+#        linuxdocker:
+#          imageName: ubuntu-latest
+        macos:
+          imageName: macOS-latest
+          prepare-env: export PATH=$PATH:$HOME/.local/bin
+          pip-command: pip
+          conan-profile: ""
+        windows:
+          imageName: windows-latest
+          prepare-env: $(create-mingw-profile)
+          pip-command: python -m pip
+          conan-profile: "-p mingw"
 
     pool:
       vmImage: $(imageName)
@@ -70,5 +65,23 @@ jobs:
           conan create . -s compiler.libcxx=libstdc++11 $(conan-profile)
         displayName: create conan package
 
-  -job: CreatePackageOtherLinux
+  - job: CreatePackageOtherLinux
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      - script: |
+          echo "Hello CI"
+        displayName: whatever
 
+
+- stage: publish
+  displayName: publish conan package
+  dependsOn: create
+  jobs:
+    - job: PublishPackage
+      pool:
+        vmImage: ubuntu-latest
+      steps:
+        - script: |
+            echo "Hello CI"
+          displayName: whatever
