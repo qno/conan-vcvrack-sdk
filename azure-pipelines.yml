@@ -35,18 +35,19 @@ stages:
             export PATH="$PATH:/home/vsts/.local/bin"
             sudo apt install -y python3-setuptools
           pip-command: pip3
+          conan-libcxx-setting: -s compiler.libcxx=libstdc++11
           conan-profile: ""
-#        linuxdocker:
-#          imageName: ubuntu-latest
         macos:
           imageName: macOS-latest
           prepare-env: export PATH=$PATH:$HOME/.local/bin
           pip-command: pip
+          conan-libcxx-setting: ""
           conan-profile: ""
         windows:
           imageName: windows-latest
           prepare-env: $(create-mingw-profile)
           pip-command: python -m pip
+          conan-libcxx-setting: -s compiler.libcxx=libstdc++11
           conan-profile: "-p mingw"
 
     pool:
@@ -60,10 +61,10 @@ stages:
          $(pip-command) install --user --upgrade pip
          $(pip-command) install --user conan
          conan user
-         conan create . -s compiler.libcxx=libstdc++11 $(conan-profile)
+         conan create . $(conan-libcxx-setting) $(conan-profile)
         displayName: create conan package
 
-  - job: CreatePackageOtherLinux
+  - job: Docker
     pool:
       vmImage: ubuntu-latest
     steps:
