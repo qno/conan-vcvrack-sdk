@@ -129,7 +129,7 @@ stages:
          pip3 install --user --upgrade pip
          pip3 install --user conan
          conan user
-         conan create . vcvrack-sdk/$(vcvrack-sdk-conan-channel) -s compiler.libcxx=libstdc++11
+         conan create . vcvrack/$(vcvrack-sdk-conan-channel) -s compiler.libcxx=libstdc++11
          conan remote add qno https://api.bintray.com/conan/qno/conan-public --insert
          conan user -p $(BINTRAY_API_KEY) --remote qno qno
          conan upload vcvrack-sdk/$(vcvrack-sdk-version)@vcvrack/$(vcvrack-sdk-conan-channel) --remote qno
