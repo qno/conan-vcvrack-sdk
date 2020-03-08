@@ -67,9 +67,7 @@ class VCVRackSDKConan(ConanFile):
         self.copy("*.mk", dst=".", src="{}".format(self._SDK_DIR))
         os.chmod(os.path.join(self._SDK_DIR, "helper.py"), stat.S_IRWXU|stat.S_IRGRP|stat.S_IROTH)
         self.copy("helper.py", dst="script", src="{}".format(self._SDK_DIR))
-
-        if self.settings.os == "Windows":
-            self.copy("*Rack*.a", dst=".", keep_path=False)
+        self.copy("*Rack*.a", dst=".", keep_path=False)
 
     def package_info(self):
         if self.settings.os == "Windows":
