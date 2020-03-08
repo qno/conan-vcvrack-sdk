@@ -6,6 +6,7 @@ pr:
 - master
 
 variables:
+  group: "qno CONAN BINTRAY ENVIRONMENT"
   python-version: "3.7"
   vcvrack-sdk-version: "1.1.6"
   vcvrack-sdk-conan-channel: "testing"
@@ -28,13 +29,13 @@ variables:
     ) > mingw
 
 stages:
-- stage: create
-  displayName: create conan package
+- stage: build
+  displayName: build and test conan package
   jobs:
   - job: CreatePackage
     strategy:
       matrix:
-        linuxubuntu:
+        Ubuntu:
           imageName: ubuntu-latest
           prepare-env: |
             export PATH="$PATH:/home/vsts/.local/bin"
@@ -42,13 +43,13 @@ stages:
           pip-command: pip3
           conan-libcxx-setting: -s compiler.libcxx=libstdc++11
           conan-profile: ""
-        macos:
+        MacOS:
           imageName: macOS-latest
           prepare-env: export PATH=$PATH:$HOME/.local/bin
           pip-command: pip
           conan-libcxx-setting: ""
           conan-profile: ""
-        windows:
+        Windows:
           imageName: windows-latest
           prepare-env: $(create-mingw-profile)
           pip-command: python -m pip
@@ -113,7 +114,7 @@ stages:
 
 - stage: publish
   displayName: publish conan package
-  dependsOn: create
+  dependsOn: build
   jobs:
     - job: PublishPackage
       pool:
