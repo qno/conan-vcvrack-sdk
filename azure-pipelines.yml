@@ -1,16 +1,14 @@
 # https://docs.microsoft.com/de-de/azure/devops/pipelines/agents/hosted?view=azure-devops#software
 trigger:
 - master
-- latest*
 pr:
 - master
 
 # Note: link variable group to build pipeline on Azure by going to Edit and then Triggers
 variables:
-  verbose: "1"
   python-version: "3.7"
   vcvrack-sdk-version: "1.1.6"
-  vcvrack-sdk-conan-channel: "testing"
+  vcvrack-sdk-conan-channel: "stable"
   create-mingw-profile: |
     (
       echo [settings]
