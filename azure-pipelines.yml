@@ -81,7 +81,7 @@ stages:
           pip-command: pip3
         Debian:
           dockerImage: debian
-          install-sudo: apt update && apt install -y sudo
+          install-sudo: apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo
           prepare-env: sudo apt install -y python3-setuptools
           pip-command: pip3
         Fedora:
