@@ -69,15 +69,25 @@ stages:
       vmImage: ubuntu-latest
     strategy:
       matrix:
-        arch:
+        Arch:
           docker-image: arch
           install-sudo: pacman -Sy --noconfirm sudo
           prepare-env: sudo pacman -Sy --noconfirm python python-pip gcc
           pip-command: pip
-        centos:
+        CentOS:
           dockerImage: centos
           install-sudo: yum install -y sudo
           prepare-env: sudo yum install -y python3 gcc gcc-c++
+          pip-command: pip3
+        Debian:
+          dockerImage: debian
+          install-sudo: sudo apt install -y sudo
+          prepare-env: sudo apt install -y python3-setuptools
+          pip-command: pip3
+        Fedora:
+          dockerImage: fedora
+          install-sudo: dnf install -y sudo
+          prepare-env: sudo dnf install -y python
           pip-command: pip3
     container:
       image: $(docker-image)
