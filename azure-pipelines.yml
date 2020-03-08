@@ -67,10 +67,33 @@ stages:
   - job: Docker
     pool:
       vmImage: ubuntu-latest
+    strategy:
+      matrix:
+        arch:
+          docker-image: arch
+          install-sudo: pacman -Sy --noconfirm sudo
+          prepare-env: sudo pacman -Sy --noconfirm python python-pip gcc
+          pip-command: pip
+        centos:
+          dockerImage: centos
+          install-sudo: yum install -y sudo
+          prepare-env: sudo yum install -y python3 gcc gcc-c++
+          pip-command: pip3
+    container:
+      image: $(docker-image)
+      options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
     steps:
       - script: |
-          echo "Hello CI"
-        displayName: whatever
+          /tmp/docker exec -t -u 0 ci-container sh -c "$(install-sudo)"
+        displayName: add sudo to container #https://github.com/Microsoft/azure-pipelines-agent/issues/2043
+      - script: |
+          export PATH="$PATH:$HOME/.local/bin"
+          $(prepare-env)
+          $(pip-command) install --user --upgrade pip
+          $(pip-command) install --user conan
+          conan user
+          conan create . -s compiler.libcxx=libstdc++11
+        displayName: conan create package
 
 
 - stage: publish
