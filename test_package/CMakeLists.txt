@@ -16,6 +16,5 @@ add_library(${LIB_NAME} MODULE plugintest.cpp)
 target_link_libraries(plugintest ${CONAN_LIBS})
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-  #set_target_properties(${LIB_NAME} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
   set_target_properties(${LIB_NAME} PROPERTIES SUFFIX ".dylib")
 endif ()

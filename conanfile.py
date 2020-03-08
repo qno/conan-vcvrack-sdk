@@ -73,15 +73,17 @@ class VCVRackSDKConan(ConanFile):
 
     def package_info(self):
         if self.settings.os == "Windows":
-            self.cpp_info.cxxflags.append("-DARCH_WIN -Wsuggest-override")
+            self.cpp_info.cxxflags.append("-DARCH_WIN")
             self.cpp_info.libs.append("Rack")
             self.env_info.path.append(os.path.join(self.deps_env_info["msys2"].MSYS_ROOT, "mingw64", "bin"))
 
         if self.settings.os == "Linux":
-            self.cpp_info.cxxflags.append("-DARCH_LIN -Wsuggest-override")
+            self.cpp_info.cxxflags.append("-DARCH_LIN")
 
         if self.settings.os == "Macos":
             self.cpp_info.cxxflags.append("-DARCH_MAC -undefined dynamic_lookup")
+        else:
+            self.cpp_info.cxxflags.append("-Wsuggest-override")
 
         self.cpp_info.cxxflags.append("-D_USE_MATH_DEFINES -march=nocona -funsafe-math-optimizations -fPIC")
         self.cpp_info.cxxflags.append("-Wall -Wextra -Wno-unused-parameter")
