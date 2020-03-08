@@ -81,13 +81,13 @@ stages:
           pip-command: pip3
         Debian:
           dockerImage: debian
-          install-sudo: apt install -y sudo
+          install-sudo: apt update && apt install -y sudo
           prepare-env: sudo apt install -y python3-setuptools
           pip-command: pip3
         Fedora:
           dockerImage: fedora
           install-sudo: dnf install -y sudo
-          prepare-env: sudo dnf install -y python python-pip
+          prepare-env: sudo dnf install -y python python-pip gcc gcc-c++
           pip-command: pip3
     container:
       image: $(dockerImage)
