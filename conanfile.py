@@ -81,9 +81,7 @@ class VCVRackSDKConan(ConanFile):
             self.cpp_info.cxxflags.append("-DARCH_LIN -Wsuggest-override")
 
         if self.settings.os == "Macos":
-            self.cpp_info.cxxflags.append("-DARCH_MAC")
-            self.cpp_info.sharedlinkflags.append("-undefined dynamic_lookup")
-            self.cpp_info.exelinkflags.append("-undefined dynamic_lookup")
+            self.cpp_info.cxxflags.append("-DARCH_MAC -undefined dynamic_lookup")
 
         self.cpp_info.cxxflags.append("-D_USE_MATH_DEFINES -march=nocona -funsafe-math-optimizations -fPIC")
         self.cpp_info.cxxflags.append("-Wall -Wextra -Wno-unused-parameter")
