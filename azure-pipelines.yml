@@ -1,10 +1,15 @@
 # https://docs.microsoft.com/de-de/azure/devops/pipelines/agents/hosted?view=azure-devops#software
 trigger:
 - master
+- latest*
+pr:
+- master
 
+# Note: link variable group to build pipeline on Azure by going to Edit and then Triggers
 variables:
   python-version: "3.7"
-  conan-pkg: "conan"
+  vcvrack-sdk-version: "1.1.6"
+  vcvrack-sdk-conan-channel: "testing"
   create-mingw-profile: |
     (
       echo [settings]
@@ -23,83 +28,109 @@ variables:
       echo msys2/20190524
     ) > mingw
 
-jobs:
-  - job: UbuntuLinux
+stages:
+- stage: build
+  displayName: build and test conan package
+  jobs:
+  - job: CreatePackage
+    strategy:
+      matrix:
+        Ubuntu:
+          imageName: ubuntu-latest
+          prepare-env: |
+            export PATH="$PATH:/home/vsts/.local/bin"
+            sudo apt install -y python3-setuptools
+          pip-command: pip3
+          conan-libcxx-setting: -s compiler.libcxx=libstdc++11
+          conan-profile: ""
+        MacOS:
+          imageName: macOS-latest
+          prepare-env: export PATH=$PATH:$HOME/.local/bin
+          pip-command: pip
+          conan-libcxx-setting: ""
+          conan-profile: ""
+        Windows:
+          imageName: windows-latest
+          prepare-env: $(create-mingw-profile)
+          pip-command: python -m pip
+          conan-libcxx-setting: -s compiler.libcxx=libstdc++11
+          conan-profile: "-p mingw"
+
     pool:
-      vmImage: ubuntu-latest
+      vmImage: $(imageName)
     steps:
       - task: UsePythonVersion@0
         inputs:
          versionSpec: $(python-version)
       - script: |
-          export PATH="$PATH:/home/vsts/.local/bin"
-          sudo apt install -y python3-setuptools
-          pip install --user --upgrade pip
-          pip install --user $(conan-pkg)
-          conan user
-          conan create . -s compiler.libcxx=libstdc++11
-        displayName: conan create package
-  - job: ArchLinux
+         $(prepare-env)
+         $(pip-command) install --user --upgrade pip
+         $(pip-command) install --user conan
+         conan user
+         conan create . $(conan-libcxx-setting) $(conan-profile)
+        displayName: create conan package
+
+  - job: Docker
     pool:
       vmImage: ubuntu-latest
+    strategy:
+      matrix:
+        Arch:
+          dockerImage: archlinux
+          install-sudo: pacman -Sy --noconfirm sudo
+          prepare-env: sudo pacman -Sy --noconfirm python python-pip gcc
+          pip-command: pip
+        CentOS:
+          dockerImage: centos
+          install-sudo: yum install -y sudo
+          prepare-env: sudo yum install -y python3 gcc gcc-c++
+          pip-command: pip3
+        Debian:
+          dockerImage: debian
+          install-sudo: apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo
+          prepare-env: sudo apt install -y python3-setuptools python3 python3-pip build-essential
+          pip-command: pip3
+        Fedora:
+          dockerImage: fedora
+          install-sudo: dnf install -y sudo
+          prepare-env: sudo dnf install -y python python-pip gcc gcc-c++
+          pip-command: pip3
     container:
-      image: archlinux
+      image: $(dockerImage)
       options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
     steps:
       - script: |
-          /tmp/docker exec -t -u 0 ci-container sh -c "pacman -Sy --noconfirm sudo"
+          /tmp/docker exec -t -u 0 ci-container sh -c "$(install-sudo)"
         displayName: add sudo to container #https://github.com/Microsoft/azure-pipelines-agent/issues/2043
       - script: |
           export PATH="$PATH:$HOME/.local/bin"
-          sudo pacman -Sy --noconfirm python python-pip gcc
-          pip install --user --upgrade pip
-          pip install --user $(conan-pkg)
+          $(prepare-env)
+          $(pip-command) install --user --upgrade pip
+          $(pip-command) install --user conan
           conan user
           conan create . -s compiler.libcxx=libstdc++11
         displayName: conan create package
-  - job: CentOSLinux
-    pool:
-      vmImage: ubuntu-latest
-    container:
-      image: centos
-      options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
-    steps:
-      - script: |
-          /tmp/docker exec -t -u 0 ci-container sh -c "yum install -y sudo"
-        displayName: add sudo to container #https://github.com/Microsoft/azure-pipelines-agent/issues/2043
-      - script: |
-          export PATH="$PATH:$HOME/.local/bin"
-          sudo yum install -y python3 gcc gcc-c++
-          pip3 install --user --upgrade pip
-          pip3 install --user $(conan-pkg)
-          conan user
-          conan create . -s compiler.libcxx=libstdc++11
-        displayName: conan create package
-  - job: MacOS
-    pool:
-      vmImage: macOS-latest
-    steps:
+
+
+- stage: publish
+  displayName: publish conan package
+  dependsOn: build
+  jobs:
+    - job: PublishPackage
+      pool:
+        vmImage: ubuntu-latest
+      steps:
       - task: UsePythonVersion@0
         inputs:
          versionSpec: $(python-version)
       - script: |
-          export PATH=$PATH:$HOME/.local/bin
-          pip install --upgrade pip
-          pip install --upgrade $(conan-pkg)
-          conan user
-          conan create .
-        displayName: conan create package
-  - job: MinGW
-    pool:
-      vmImage: windows-latest
-    steps:
-      - task: UsePythonVersion@0
-        inputs:
-         versionSpec: $(python-version)
-      - script: |
-          $(create-mingw-profile)
-          python -m pip install --upgrade pip
-          python -m pip install $(conan-pkg)
-          conan user
-          conan create . -p ./mingw
-        displayName: conan create package
+         export PATH="$PATH:/home/vsts/.local/bin"
+         sudo apt install -y python3-setuptools
+         pip3 install --user --upgrade pip
+         pip3 install --user conan
+         conan user
+         conan create . vcvrack/$(vcvrack-sdk-conan-channel) -s compiler.libcxx=libstdc++11
+         conan remote add qno https://api.bintray.com/conan/qno/conan-public --insert
+         conan user -p $(BINTRAY_API_KEY) --remote qno qno
+         conan upload vcvrack-sdk/$(vcvrack-sdk-version)@vcvrack/$(vcvrack-sdk-conan-channel) --all --remote qno
+        displayName: create conan package
