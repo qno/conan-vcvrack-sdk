@@ -70,7 +70,7 @@ stages:
     strategy:
       matrix:
         Arch:
-          dockerImage: arch
+          dockerImage: archlinux
           install-sudo: pacman -Sy --noconfirm sudo
           prepare-env: sudo pacman -Sy --noconfirm python python-pip gcc
           pip-command: pip
@@ -81,13 +81,13 @@ stages:
           pip-command: pip3
         Debian:
           dockerImage: debian
-          install-sudo: sudo apt install -y sudo
+          install-sudo: apt install -y sudo
           prepare-env: sudo apt install -y python3-setuptools
           pip-command: pip3
         Fedora:
           dockerImage: fedora
           install-sudo: dnf install -y sudo
-          prepare-env: sudo dnf install -y python
+          prepare-env: sudo dnf install -y python python-pip
           pip-command: pip3
     container:
       image: $(dockerImage)
