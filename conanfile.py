@@ -1,4 +1,4 @@
-import os, stat, json, re
+import os, stat, json, re, subprocess
 from conans import ConanFile, CMake, tools
 from conans.tools import os_info, SystemPackageTool
 from conans.errors import ConanInvalidConfiguration
@@ -161,20 +161,17 @@ class VSCMakeSettings(Generator):
     def _getMinGWRoot(self):
         return os.path.join(self._getMinGWHome, "lib", "gcc")
 
+    def _getGccInfo(self, option):
+        result = subprocess.run(os.path.join(self._getMinGWHome, "bin", "gcc.exe") + " -{}".format(option), capture_output=True)
+        return result.stdout.decode('utf-8').strip()
+
     @property
     def _getFlavor(self):
-        return "x86_64-w64-mingw32"
+        return self._getGccInfo("dumpmachine")
 
     @property
     def _getToolsetVersion(self):
-        toolset = None
-        dirs = os.listdir(os.path.join(self._getMinGWRoot, self._getFlavor))
-        pattern = re.compile(r"^\d+\.\d+\.\d+$")
-        for d in dirs:
-            if pattern.match(d):
-                toolset = d
-                break
-        return toolset
+        return self._getGccInfo("dumpversion")
 
     @property
     def _createVariables(self):
