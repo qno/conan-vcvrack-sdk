@@ -1,7 +1,8 @@
-import os, stat
+import os, stat, json, re, subprocess
 from conans import ConanFile, CMake, tools
 from conans.tools import os_info, SystemPackageTool
 from conans.errors import ConanInvalidConfiguration
+from conans.model import Generator
 
 
 class VCVRackSDKConan(ConanFile):
@@ -75,6 +76,7 @@ class VCVRackSDKConan(ConanFile):
             self.cpp_info.libs.append("Rack")
             self.env_info.path.append(os.path.join(self.deps_env_info["msys2"].MSYS_ROOT, "mingw64", "bin"))
             self.cpp_info.libdirs.append(os.path.join(self.package_folder))
+            self.user_info.rack_sdk_dir = os.path.join(self.package_folder)
 
         if self.settings.os == "Linux":
             self.cpp_info.cxxflags.append("-DARCH_LIN")
@@ -101,3 +103,89 @@ class VCVRackSDKConan(ConanFile):
     @property
     def _isVisualStudioBuild(self):
         return self.settings.os == "Windows" and self.settings.compiler == "Visual Studio"
+
+# custom generator to generate CMakeSettings.json that can be used with MS Visual Studio
+class VSCMakeSettings(Generator):
+
+    @property
+    def filename(self):
+        return "CMakeSettings.json"
+
+    @property
+    def content(self):
+        if self.settings.os != "Windows":
+            print("*** VSCMakeSettings generator is only supported on Windows - generate empty file!")
+            return "VSCMakeSettings generator is only supported on Windows!"
+        print("*** Generate '{}' for Visual Studio".format(self.filename))
+        print("*** Please copy the generated '{}' manually into your Plugin source folder to use it with Visual Studio!".format(self.filename))
+        content = { "configurations" : [ self._createConfiguration("Release"),
+                                         self._createConfiguration("Debug")
+                                       ]
+                  }
+        return json.dumps(content, indent=2)
+
+    def _createConfiguration(self, cmakeBuildtype):
+        configuration = { "name" : "Mingw64-{}".format(cmakeBuildtype),
+                          "generator": "Ninja",
+                          "configurationType": cmakeBuildtype,
+                          "buildRoot": "${projectDir}\\out\\build\\${name}",
+                          "installRoot": "${projectDir}\\out\\install\\${name}",
+                          "cmakeCommandArgs": "",
+                          "buildCommandArgs": "-v",
+                          "ctestCommandArgs": "",
+                          "inheritEnvironments": [ "mingw_64" ],
+                          "environments": [ self._createEnvironment ],
+                          "variables": self._createVariables,
+                          "intelliSenseMode": "linux-gcc-x64"
+         }
+        return configuration
+
+    @property
+    def _createEnvironment(self):
+        environment = { "MINGW64_ROOT": self._getMinGWRoot,
+                        "BIN_ROOT": os.path.join(self._getMinGWHome, "bin"),
+                        "FLAVOR": self._getFlavor,
+                        "TOOLSET_VERSION": self._getToolsetVersion,
+                        "GCC_HEADERS_ROOT": "${env.MINGW64_ROOT}\\${env.FLAVOR}\\${env.TOOLSET_VERSION}\\include",
+                        "PATH": "${env.BIN_ROOT};${env.PATH}",
+                        "INCLUDE": "${env.INCLUDE};${env.GCC_HEADERS_ROOT}\\c++;${env.GCC_HEADERS_ROOT}\\c++\\${env.FLAVOR};${env.GCC_HEADERS_ROOT}\\c++\\backward;${env.GCC_HEADERS_ROOT}\\include;${env.GCC_HEADERS_ROOT}\\..\\include-fixed;${env.BIN_ROOT}\\..\\${env.FLAVOR}\\include",
+                        "environment": "mingw_64"
+                      }
+        return environment
+
+    @property
+    def _getMinGWHome(self):
+        return self.conanfile.deps_env_info["mingw_installer"].MINGW_HOME
+
+    @property
+    def _getMinGWRoot(self):
+        return os.path.join(self._getMinGWHome, "lib", "gcc")
+
+    def _getGccInfo(self, option):
+        result = subprocess.run(os.path.join(self._getMinGWHome, "bin", "gcc.exe") + " -{}".format(option), capture_output=True)
+        return result.stdout.decode('utf-8').strip()
+
+    @property
+    def _getFlavor(self):
+        return self._getGccInfo("dumpmachine")
+
+    @property
+    def _getToolsetVersion(self):
+        return self._getGccInfo("dumpversion")
+
+    @property
+    def _createVariables(self):
+        variables = [ self._createCMakeVariable("CMAKE_C_COMPILER", "${env.BIN_ROOT}\\gcc.exe", "STRING"),
+                      self._createCMakeVariable("CMAKE_CXX_COMPILER", "${env.BIN_ROOT}\\g++.exe", "STRING"),
+                      self._createCMakeVariable("RACK_SDK", "{}".format(self.conanfile.deps_user_info["vcvrack-sdk"].rack_sdk_dir), "STRING")
+                    ]
+        return variables
+
+
+    def _createCMakeVariable(self, name, value, varType):
+        variable = { "name": name,
+                      "value": value,
+                      "type": varType
+                   }
+        return variable
+
