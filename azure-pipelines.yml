@@ -53,7 +53,7 @@ stages:
           prepare-env: $(create-mingw-profile)
           pip-command: python -m pip
           conan-libcxx-setting: -s compiler.libcxx=libstdc++11
-          conan-profile: "-p mingw"
+          conan-profile: "-pr mingw"
 
     pool:
       vmImage: $(imageName)
