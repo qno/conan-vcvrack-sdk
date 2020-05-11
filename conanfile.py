@@ -32,14 +32,12 @@ class VCVRackSDKConan(ConanFile):
 
     def system_requirements(self):
         packages = ["git", "zip", "make", "cmake", "jq"]
-        update_installer = True
 
         if self.settings.os == "Windows":
             self.output.warn("manipulate script internal environment - add MSYS_BIN to PATH for using pacman tool")
             del os.environ["CONAN_SYSREQUIRES_SUDO"]
             os.environ["PATH"] += os.pathsep + self.env["MSYS_BIN"]
             packages = ["zip", "mingw-w64-x86_64-jq", "mingw-w64-x86_64-libwinpthread"]
-            update_installer = False
 
         if self.settings.os == "Macos":
             packages += ["autoconf", "automake", "libtool"]
@@ -55,7 +53,7 @@ class VCVRackSDKConan(ConanFile):
 
         installer = SystemPackageTool()
         for package in packages:
-            installer.install(package, update=update_installer)
+            installer.install(package, update=False)
 
     def build(self):
         url = "https://vcvrack.com/downloads/Rack-SDK-{}.zip".format(self.version)
