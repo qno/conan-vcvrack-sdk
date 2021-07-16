@@ -123,6 +123,7 @@ stages:
         inputs:
          versionSpec: $(python-version)
       - script: |
+         export CONAN_REVISIONS_ENABLED=1
          export PATH="$PATH:/home/vsts/.local/bin"
          sudo apt install -y python3-setuptools
          pip3 install --user --upgrade pip
