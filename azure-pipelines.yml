@@ -79,11 +79,11 @@ stages:
           install-sudo: pacman -Sy --noconfirm sudo
           prepare-env: sudo pacman -Sy --noconfirm python python-pip gcc
           pip-command: pip
-        CentOS:
-          dockerImage: centos
-          install-sudo: yum install -y sudo
-          prepare-env: sudo yum update && sudo yum install -y python3 gcc gcc-c++
-          pip-command: pip3
+        #CentOS:
+        #  dockerImage: centos
+        #  install-sudo: yum install -y sudo
+        #  prepare-env: sudo yum install -y python3 gcc gcc-c++
+        #  pip-command: pip3
         Debian:
           dockerImage: debian
           install-sudo: apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo
