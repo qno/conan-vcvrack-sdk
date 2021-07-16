@@ -10,7 +10,7 @@ A conan recipe for the VCV Rack SDK for Rack plugin development.
 * Install and setup the [Conan C++ package manager](https://docs.conan.io/en/latest/installation.html) for your build platform
 
 * Add the following conan remote:
-  * `conan remote add qno https://api.bintray.com/conan/qno/conan-public`
+  * `conan remote add qno https://qno.jfrog.io/artifactory/api/conan/public-conan`
 
 * Recipe reference `vcvrack-sdk/1.1.6@vcvrack/stable`
 
