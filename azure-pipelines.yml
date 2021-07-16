@@ -82,7 +82,7 @@ stages:
         CentOS:
           dockerImage: centos
           install-sudo: yum install -y sudo
-          prepare-env: sudo yum install -y python3 gcc gcc-c++
+          prepare-env: sudo yum update && sudo yum install -y python3 gcc gcc-c++
           pip-command: pip3
         Debian:
           dockerImage: debian
