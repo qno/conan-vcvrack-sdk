@@ -123,12 +123,12 @@ stages:
         inputs:
          versionSpec: $(python-version)
       - script: |
-         export CONAN_REVISIONS_ENABLED=1
          export PATH="$PATH:/home/vsts/.local/bin"
          sudo apt install -y python3-setuptools
          pip3 install --user --upgrade pip
          pip3 install --user conan
          conan user
+         conan config set general.revisions_enabled=1
          conan create . vcvrack/$(vcvrack-sdk-conan-channel) -s compiler.libcxx=libstdc++11
          conan remote add qno https://qno.jfrog.io/artifactory/api/conan/public-conan --insert
          conan user -p $(JFROG_API_KEY) --remote qno $(JFROG_LOGIN_USER)
