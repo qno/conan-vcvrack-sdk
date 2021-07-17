@@ -153,7 +153,7 @@ class VSCMakeSettings(Generator):
 
     @property
     def _getMinGWHome(self):
-        return self.conanfile.deps_env_info["mingw_installer"].MINGW_HOME
+        return self.conanfile.deps_env_info["mingw-w64"].MINGW_HOME
 
     @property
     def _getMinGWRoot(self):
