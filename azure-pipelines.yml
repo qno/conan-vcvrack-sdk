@@ -23,8 +23,7 @@ variables:
       echo compiler.threads=posix
       echo build_type=Release
       echo [build_requires]
-      echo mingw_installer/1.0@conan/stable
-      echo msys2/20190524
+      echo mingw-w64/8.1
     ) > mingw
 
 stages:

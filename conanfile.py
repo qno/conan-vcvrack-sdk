@@ -28,7 +28,7 @@ class VCVRackSDKConan(ConanFile):
 
     def requirements(self):
         if self.settings.os == "Windows":
-            self.requires.add("msys2/20190524")
+            self.requires.add("msys2/20210105")
 
     def system_requirements(self):
         packages = ["git", "zip", "make", "cmake", "jq"]
