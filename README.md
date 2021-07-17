@@ -3,7 +3,7 @@ A conan recipe for the VCV Rack SDK for Rack plugin development.
 
 [![Build Status](https://dev.azure.com/qnohot/qnohot/_apis/build/status/qno.conan-vcvrack-sdk?branchName=master)](https://dev.azure.com/qnohot/qnohot/_build/latest?definitionId=27&branchName=master)
 
-[Show artifact at JFrog](https://qno.jfrog.io/ui/repos/tree/General/public-conan-local%2Fvcvrack%2Fvcvrack-sdk)
+[![conan vcvrack-sdk](https://img.shields.io/badge/conan-vcvrack--sdk%2F1.1.6%40vcvrack%2Fstable-blue)](https://qno.jfrog.io/ui/repos/tree/General/public-conan-local%2Fvcvrack%2Fvcvrack-sdk%2F1.1.6%2Fstable)
 
 # Usage
 
