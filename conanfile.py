@@ -80,7 +80,8 @@ class VCVRackSDKConan(ConanFile):
             self.cpp_info.cxxflags.append("-DARCH_LIN")
 
         if self.settings.os == "Macos":
-            self.cpp_info.cxxflags.append("-DARCH_MAC -undefined dynamic_lookup")
+            self.cpp_info.cxxflags.append("-DARCH_MAC")
+            self.cpp_info.exelinkflags.append("-undefined dynamic_lookup") 
         else:
             self.cpp_info.cxxflags.append("-Wsuggest-override")
 
@@ -186,4 +187,3 @@ class VSCMakeSettings(Generator):
                       "type": varType
                    }
         return variable
-
