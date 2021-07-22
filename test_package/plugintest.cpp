@@ -43,14 +43,13 @@ class TestWidget : public rack::ModuleWidget
 
   TestWidget(TestModule* module) : ModuleWidget(), _module(module)
   {
-    setModule(module);
+    setModule(_module);
   }
 
   virtual ~TestWidget() = default;
 
   void step() override
   {
-    _module->process(ProcessArgs{});
     ModuleWidget::step();
   }
 
