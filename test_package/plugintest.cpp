@@ -50,6 +50,7 @@ class TestWidget : public rack::ModuleWidget
 
   void step() override
   {
+    _module->process(ProcessArgs{});
     ModuleWidget::step();
   }
 
