@@ -80,7 +80,7 @@ class VCVRackSDKConan(ConanFile):
             self.cpp_info.cxxflags.append("-DARCH_LIN")
 
         if self.settings.os == "Macos":
-            self.cpp_info.cxxflags.append("-DARCH_MAC -aa IAM_CXXFLAG")
+            self.cpp_info.cxxflags.append("-DARCH_MAC -DCXXFLAGS")
             self.cpp_info.sharedlinkflags = []
             self.cpp_info.sharedlinkflags.append("-undefined dynamic_lookup -xx FROM_SHAREDLINKFLAG")
             self.cpp_info.exelinkflags = []
