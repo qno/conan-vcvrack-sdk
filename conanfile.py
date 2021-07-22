@@ -80,11 +80,9 @@ class VCVRackSDKConan(ConanFile):
             self.cpp_info.cxxflags.append("-DARCH_LIN")
 
         if self.settings.os == "Macos":
-            self.cpp_info.cxxflags.append("-DARCH_MAC -DCXXFLAGS")
-            self.cpp_info.sharedlinkflags = []
-            self.cpp_info.sharedlinkflags.append("-undefined dynamic_lookup -xx FROM_SHAREDLINKFLAG")
-            self.cpp_info.exelinkflags = []
-            self.cpp_info.exelinkflags.append("-undefined dynamic_lookup -yy FROM_EXELINKFLAG")
+            self.cpp_info.cxxflags.append("-DARCH_MAC")
+            if self.settings.compiler == "apple-clang":
+                self.cpp_info.cxxflags.append("-undefined dynamic_lookup -Wno-unused-command-line-argument")
         else:
             self.cpp_info.cxxflags.append("-Wsuggest-override")
 
