@@ -1,6 +1,6 @@
 # https://docs.microsoft.com/de-de/azure/devops/pipelines/agents/hosted?view=azure-devops#software
-trigger:
-- master
+#trigger:
+#- master
 pr:
 - master
 
